@@ -5,7 +5,19 @@ Wrapper around browser history with a nicer API. Can also build an in-memory his
 # API
 
 ```ts
-export interface BHistory {
+function createBrowserHistory(options?: BrowserHistoryOptions): BHistory;
+function createMemoryHistory(): BHistory;
+```
+
+```ts
+interface BrowserHistoryOptions {
+  basePath?: string;
+  useHash?: boolean;
+}
+```
+
+```ts
+interface BHistory {
   location(): BLocation;
   navigate(to: string, options?: NavigateOptions): void;
   back(): void;
@@ -13,5 +25,15 @@ export interface BHistory {
   go(delta: number): void;
   reload(): void;
   listen(listener: (location: BLocation) => void): () => void;
+}
+
+interface BLocation {
+  path: string;
+  query?: Query;
+  hash?: string;
+}
+
+interface NavigateOptions {
+  replace?: boolean;
 }
 ```
