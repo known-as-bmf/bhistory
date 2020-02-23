@@ -1,2 +1,3 @@
 export * from './types';
-export * from './bhistory';
+export * from './browser';
+export * from './memory';

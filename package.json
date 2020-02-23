@@ -1,5 +1,5 @@
 {
-  "name": "bhistory",
+  "name": "@known-as-bmf/bhistory",
   "version": "0.1.0",
   "author": "Julien Avert",
   "license": "MIT",
@@ -12,34 +12,27 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
-    "test": "tsdx test --watch",
+    "test": "tsdx test",
+    "test:watch": "tsdx test --watch",
     "test:coverage": "tsdx test --coverage",
     "lint": "tsdx lint"
   },
-  "peerDependencies": {
-    "react": ">=16.8"
-  },
+  "peerDependencies": {},
   "devDependencies": {
-    "@testing-library/react": "9.4.0",
-    "@testing-library/react-hooks": "3.2.1",
-    "@types/jest": "25.1.2",
-    "@types/react": "16.9.19",
-    "@types/react-dom": "16.9.5",
-    "@typescript-eslint/eslint-plugin": "2.19.2",
-    "@typescript-eslint/parser": "2.19.2",
+    "@types/jest": "25.1.3",
+    "@typescript-eslint/eslint-plugin": "2.20.0",
+    "@typescript-eslint/parser": "2.20.0",
     "eslint": "6.8.0",
-    "eslint-plugin-react-hooks": "2.3.0",
     "husky": "4.2.3",
     "prettier": "1.19.1",
     "pretty-quick": "2.0.1",
-    "react": "16.12.0",
-    "react-dom": "16.12.0",
-    "react-test-renderer": "16.12.0",
     "tsdx": "0.12.3",
-    "tslib": "1.10.0",
-    "typescript": "3.7.5"
+    "tslib": "1.11.0",
+    "typescript": "3.8.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@known-as-bmf/store": "0.2.0"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "tsdx lint"
