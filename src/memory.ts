@@ -1,25 +1,37 @@
 import { of, set, undo, redo, deref, subscribe } from '@known-as-bmf/store';
 
-import { BHistory, BLocation, NavigateOptions } from './types';
+import { BHistory, BLocation, HistoryListener } from './types';
+import { joinPath } from './url';
 
 export function createMemoryHistory(): BHistory {
-  const history = of('', { historyDepth: Infinity });
+  const history = of<BLocation>({ path: '/' }, { historyDepth: Infinity });
 
   function location(): BLocation {
-    return {
-      path: deref(history),
+    return deref(history);
+  }
+
+  let listeners: HistoryListener[] = [];
+
+  function notifyListeners(): void {
+    listeners.forEach(l => l(location()));
+  }
+
+  function listen(listener: HistoryListener): () => void {
+    const unsubscribe = subscribe(
+      history,
+      () => listener(location()),
+      loc => loc.path
+    );
+    listeners = [...listeners, listener];
+
+    return (): void => {
+      unsubscribe();
+      listeners = listeners.filter(l => l !== listener);
     };
   }
 
-  function navigate(
-    to: string,
-    // no supported for now
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    //@ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    { replace = false }: NavigateOptions = {}
-  ): void {
-    set(history, to);
+  function navigate(to: string): void {
+    set(history, { path: joinPath(to) });
   }
 
   function back(): void {
@@ -48,8 +60,8 @@ export function createMemoryHistory(): BHistory {
     }
   }
 
-  function listen(callback: (location: BLocation) => void): () => void {
-    return subscribe(history, () => callback(location()));
+  function reload(): void {
+    notifyListeners();
   }
 
   return {
@@ -58,6 +70,7 @@ export function createMemoryHistory(): BHistory {
     back,
     forward,
     go,
+    reload,
     listen,
   };
 }

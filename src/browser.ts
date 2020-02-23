@@ -8,18 +8,27 @@ import {
 import { parseQuery, joinPath } from './url';
 
 export function createBrowserHistory({
-  basePath = '',
+  basePath = '/',
   useHash = false,
 }: BrowserHistoryOptions = {}): BHistory {
-  // sanitize basePath
-  basePath = joinPath(basePath);
-
   function location(): BLocation {
-    return {
-      path: window.location.pathname,
-      query: parseQuery(window.location.search),
-      hash: window.location.hash.slice(1) || undefined,
+    const { pathname, search, hash } = window.location;
+
+    const loc: BLocation = {
+      path: useHash ? hash.slice(1) : pathname,
     };
+
+    const query = parseQuery(search);
+    if (query) {
+      loc.query = query;
+    }
+
+    const cleanedHash = window.location.hash.slice(1);
+    if (!useHash && cleanedHash) {
+      loc.hash = cleanedHash;
+    }
+
+    return loc;
   }
 
   let listeners: HistoryListener[] = [];
@@ -39,12 +48,20 @@ export function createBrowserHistory({
     to: string,
     { replace = false }: NavigateOptions = {}
   ): void {
-    const path = `${useHash ? '#' : ''}${joinPath(basePath, to)}`;
-    if (!replace) {
-      window.history.pushState({}, '', path);
-    } else {
-      window.history.replaceState({}, '', path);
+    let nextPath = joinPath(basePath, to);
+    const { path: currentPath } = location();
+
+    if (nextPath === currentPath) {
+      return;
     }
+
+    nextPath = `${useHash ? '#' : ''}${nextPath}`;
+    if (!replace) {
+      window.history.pushState({}, '', nextPath);
+    } else {
+      window.history.replaceState({}, '', nextPath);
+    }
+
     notifyListeners();
   }
 
@@ -57,7 +74,19 @@ export function createBrowserHistory({
   }
 
   function go(delta: number): void {
+    if (delta === 0) {
+      return;
+    }
+
     window.history.go(delta);
+  }
+
+  function reload(): void {
+    notifyListeners();
+  }
+
+  if (useHash) {
+    window.location.hash = '/';
   }
 
   window.addEventListener('popstate', notifyListeners);
@@ -68,6 +97,7 @@ export function createBrowserHistory({
     back,
     forward,
     go,
+    reload,
     listen,
   };
 }

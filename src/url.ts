@@ -1,20 +1,24 @@
 import { Query } from './types';
 
 export function joinPath(...fragments: string[]): string {
-  return fragments
-    .map(f => f.trim())
-    .filter(f => f.length > 0)
-    .map(f => {
-      let cleanedFragment = f;
-      if (f.startsWith('/')) {
-        cleanedFragment = f.slice(1);
-      }
-      if (f.endsWith('/')) {
-        cleanedFragment = f.slice(0, -1);
-      }
-      return cleanedFragment;
-    })
-    .join('/');
+  return (
+    '/' +
+    fragments
+      .map(f => f.trim())
+      .filter(f => f.length > 0)
+      .map(f => {
+        let cleanedFragment = f;
+        if (f.startsWith('/')) {
+          cleanedFragment = f.slice(1);
+        }
+        if (f.endsWith('/')) {
+          cleanedFragment = f.slice(0, -1);
+        }
+        return cleanedFragment;
+      })
+      .filter(f => f.length > 0)
+      .join('/')
+  );
 }
 
 export function parseQuery(queryString: string): Query | undefined {

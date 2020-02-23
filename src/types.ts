@@ -12,6 +12,7 @@ export interface BHistory {
   back(): void;
   forward(): void;
   go(delta: number): void;
+  reload(): void;
   listen(listener: (location: BLocation) => void): () => void;
 }
 
